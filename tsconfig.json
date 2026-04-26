@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext", // Veya "CommonJS"
+    "rootDir": "./source", // "main.ts" yerine klasörün kendisini yaz
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["source/**/*"], // Sadece source içindeki dosyaları derle
+  "exclude": ["node_modules"]
+}
