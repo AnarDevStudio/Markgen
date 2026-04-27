@@ -8,7 +8,14 @@ class Parser {
     }
 }
 
+type ImportantRule = {
+    rule: string;
+    level: "important" | "critical";
+};
+
 export class MarkgenParser extends Parser {
+
+    private importantRules: ImportantRule[] = [];
 
     constructor(code: string) {
         super(code);
@@ -36,10 +43,59 @@ export class MarkgenParser extends Parser {
             } else if (trimmedLine.startsWith("@step")) {
                 const value = this.extractValue("@step", trimmedLine);
                 this.sendPost(`STEP: { ${value} }`);
+
+            } 
+            
+            else if (trimmedLine.startsWith("@important!")) {
+                const value = this.extractValue("@important!", trimmedLine);
+                this.registerImportant(value, "critical");
+
+            } else if (trimmedLine.startsWith("@important")) {
+                const value = this.extractValue("@important", trimmedLine);
+                this.registerImportant(value, "important");
             }
+        });
+
+        this.flushImportantRules();
+    }
+
+    private registerImportant(value: string, level: "important" | "critical") {
+        const parsed = this.parseImportantValue(value);
+
+        this.importantRules.push({
+            rule: parsed,
+            level
         });
     }
 
+    private parseImportantValue(value: string): string {
+        if (value.includes(":")) {
+            const ruleMatch = value.match(/rule\s*:\s*"([^"]+)"/);
+            if (ruleMatch) return ruleMatch[1];
+        }
+
+        return value.replace(/^"|"$/g, '').trim();
+    }
+
+    private flushImportantRules() {
+        if (this.importantRules.length === 0) return;
+
+        console.log(chalk.yellow("\n📌 Constraints:\n"));
+
+        this.importantRules.forEach(rule => {
+            if (rule.level === "important") {
+                console.log(
+                    chalk.blue("[important] ") + rule.rule
+                );
+            } else {
+                console.log(
+                    chalk.red("[critical] ") + rule.rule
+                );
+            }
+        });
+
+        console.log();
+    }
     private normalizeMultiline(source: string): string {
         const result: string[] = [];
         let buffer: string | null = null;
@@ -58,7 +114,7 @@ export class MarkgenParser extends Parser {
                     depth = 0;
                 }
 
-            } else if (/^@\w+\s*\(/.test(trimmed)) {
+            } else if (/^@\w+!?[\s]*\(/.test(trimmed)) {
                 const opens  = this.countChar(trimmed, '(');
                 const closes = this.countChar(trimmed, ')');
 
@@ -85,8 +141,7 @@ export class MarkgenParser extends Parser {
         const rest = line.slice(directive.length).trim();
 
         if (rest.startsWith('(') && rest.endsWith(')')) {
-            const inner = rest.slice(1, -1).trim();
-            return inner;
+            return rest.slice(1, -1).trim();
         }
 
         return rest.replace(/^"|"$/g, '').trim();
