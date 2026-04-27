@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { defineCommand, runMain } from "citty";
-import chalk from "chalk";
 import { Commands } from "./commands.js";
 import { FileLoader } from "../../markgen-compiler/file-loader.js";
 import { writeFile } from "fs/promises";
