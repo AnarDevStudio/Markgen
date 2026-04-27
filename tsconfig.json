@@ -2,14 +2,19 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "NodeNext",
-    "rootDir": "./source", 
-    "types": ["node"],
+    "moduleResolution": "NodeNext",
+
+    "rootDir": "./source",
     "outDir": "./dist",
+
     "strict": true,
+
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+
+    "types": ["node"]
   },
-  "include": ["source/**/*"], 
+  "include": ["source/**/*"],
   "exclude": ["node_modules"]
 }

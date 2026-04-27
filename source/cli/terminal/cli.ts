@@ -1,78 +1,66 @@
 #!/usr/bin/env node
-import { defineCommand, runMain } from 'citty';
-import { MarkgenParser } from '../../markgen-compiler/perser.js';
+import { defineCommand, runMain } from "citty";
+import chalk from "chalk";
+import { Commands } from "./commands.js";
+import { FileLoader } from "../../markgen-compiler/file-loader.js";
+import { writeFile } from "fs/promises";
 
 const main = defineCommand({
-  meta: {
-    name: 'mg',
-    version: '0.1.0',
-    description: 'Markgen CLI'
-  },
-  args: {
-    command: { type: 'positional', required: false }
-  },
-  run() {
-    console.log(`
-mg <command> [file] [options]
+  meta: Commands.meta,
 
-Commands:
-  run     Dosyayı parse edip çalıştırır
-  build   Çıktıyı dosyaya yazar
-  check   Syntax kontrolü yapar (çalıştırmadan)
-  init    Yeni bir .mg dosyası oluşturur
-
-Options:
-  --debug     Her direktifi loglar
-  --out       Çıktı dosyası (build için)
-  --watch     Dosya değişince otomatik çalıştır
-    `.trim());
-  },
   subCommands: {
     run: defineCommand({
-      meta: { description: 'Dosyayı parse edip çalıştırır' },
+      meta: Commands.commands.run,
       args: {
-        file: { type: 'positional', required: true },
-        debug: { type: 'boolean', default: false }
+        file: { type: "positional", required: true },
+        debug: { type: "boolean", default: false }
       },
       async run({ args }) {
-        const fs = await import('fs/promises');
-        const content = await fs.readFile(args.file, 'utf-8');
-        const parser = new MarkgenParser(content);
-        parser.parse();
+        const fileLoader = new FileLoader();
+        const content = await fileLoader.load(args.file);
+        console.log(content);
       }
     }),
 
     build: defineCommand({
-      meta: { description: 'Çıktıyı dosyaya yazar' },
+      meta: Commands.commands.build,
       args: {
-        file: { type: 'positional', required: true },
-        out: { type: 'string', default: 'output.txt' }
+        file: { type: "positional", required: true },
+        out: { type: "string", default: "output.txt" }
       },
       async run({ args }) {
+        const fileLoader = new FileLoader();
+        const content = await fileLoader.load(args.file);
+
         console.log(`Building ${args.file} → ${args.out}`);
+        console.log(content);
       }
     }),
 
     check: defineCommand({
-      meta: { description: 'Syntax kontrolü yapar' },
+      meta: Commands.commands.check,
       args: {
-        file: { type: 'positional', required: true }
+        file: { type: "positional", required: true }
       },
       async run({ args }) {
-        console.log(`Checking ${args.file}...`);
+        const fileLoader = new FileLoader();
+        await fileLoader.load(args.file);
+
+        console.log(`${args.file} is valid`);
       }
     }),
 
     init: defineCommand({
-      meta: { description: 'Yeni bir .mg dosyası oluşturur' },
+      meta: Commands.commands.init,
       args: {
-        name: { type: 'positional', required: false, default: 'main' }
+        name: { type: "positional", required: false, default: "main" }
       },
       async run({ args }) {
-        const fs = await import('fs/promises');
         const filename = `${args.name}.mg`;
         const template = `@task ""\n@role ""\n@use ()\n\n@step ""\n`;
-        await fs.writeFile(filename, template, 'utf-8');
+
+        await writeFile(filename, template, "utf-8");
+
         console.log(`Created ${filename}`);
       }
     })

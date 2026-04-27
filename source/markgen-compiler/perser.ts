@@ -80,7 +80,7 @@ export class MarkgenParser extends Parser {
     private flushImportantRules() {
         if (this.importantRules.length === 0) return;
 
-        console.log(chalk.yellow("\n📌 Constraints:\n"));
+        console.log(chalk.yellow("\n Constraints:\n"));
 
         this.importantRules.forEach(rule => {
             if (rule.level === "important") {
@@ -154,6 +154,6 @@ export class MarkgenParser extends Parser {
     }
 
     private sendPost(payload: string) {
-        console.log(chalk.green("🚀 Gönderiliyor: ") + chalk.cyan(payload));
+        console.log(chalk.green("Sending: ") + chalk.cyan(payload));
     }
 }
