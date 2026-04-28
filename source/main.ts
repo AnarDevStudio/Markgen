@@ -1,3 +1,7 @@
-import { MarkgenCompiler } from './markgen-compiler/main.js';
+#!/usr/bin/env node
+import { runCli } from "./cli/terminal/cli.js";
+import { withErrorHandling } from "./error-handler.js";
 
-const code = new MarkgenCompiler()
+await withErrorHandling(async () => {
+    await runCli();
+});

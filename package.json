@@ -2,14 +2,14 @@
   "name": "markgen",
   "version": "1.0.0",
   "description": "",
-  "main": "source/main.ts",
+  "main": "dist/main.js",
   "bin": {
-    "mg": "source/cli/terminal/cli.ts"
+    "mg": "dist/main.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "mg": "tsx source/cli/terminal/cli.ts",
+    "mg": "tsx source/main.ts",
     "start": "npm run build && node dist/main.js"
   },
   "keywords": [],
