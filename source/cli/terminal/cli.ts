@@ -3,6 +3,7 @@ import { defineCommand, runMain } from "citty";
 import { Commands } from "./commands.js";
 import { FileLoader } from "../../markgen-compiler/file-loader.js";
 import { writeFile } from "fs/promises";
+import { MarkgenParser } from "../../markgen-compiler/perser.js";
 
 const main = defineCommand({
   meta: Commands.meta,
@@ -17,7 +18,8 @@ const main = defineCommand({
       async run({ args }) {
         const fileLoader = new FileLoader();
         const content = await fileLoader.load(args.file);
-        console.log(content);
+        const parser = new MarkgenParser(content);
+        parser.parse();
       }
     }),
 
@@ -25,7 +27,7 @@ const main = defineCommand({
       meta: Commands.commands.build,
       args: {
         file: { type: "positional", required: true },
-        out: { type: "string", default: "output.txt" }
+        out: { type: "string", default: "output.md" }
       },
       async run({ args }) {
         const fileLoader = new FileLoader();
@@ -44,7 +46,8 @@ const main = defineCommand({
       async run({ args }) {
         const fileLoader = new FileLoader();
         await fileLoader.load(args.file);
-
+        const parser = new MarkgenParser(args.file);
+        parser.parse();
         console.log(`${args.file} is valid`);
       }
     }),
@@ -59,6 +62,7 @@ const main = defineCommand({
         const template = `@task ""\n@role ""\n@use ()\n\n@step ""\n`;
 
         await writeFile(filename, template, "utf-8");
+        
 
         console.log(`Created ${filename}`);
       }
