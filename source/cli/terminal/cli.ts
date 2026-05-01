@@ -53,21 +53,39 @@ export const mainCommand = defineCommand({
       }
     }),
 
-    init: defineCommand({
-      meta: Commands.commands.init,
-      args: {
-        name: { type: "positional", required: false, default: "main" }
+init: defineCommand({
+  meta: Commands.commands.init,
+  args: {
+    name: { type: "positional", required: false, default: "main" }
+  },
+  async run({ args }) {
+    const filename = `${args.name}.mg`;
+    const template = `@task "" \n @role "" \n @use () \n @step ""`;
+
+    await writeFile(filename, template, "utf-8");
+
+    const config = {
+      project: args.name,
+      version: "0.1.0",
+      defaultFile: filename,
+      compiler: {
+        strict: true,
+        debug: false
       },
-      async run({ args }) {
-        const filename = `${args.name}.mg`;
-        const template = `@task ""\n@role ""\n@use ()\n\n@step ""\n`;
-
-        await writeFile(filename, template, "utf-8");
-        
-
-        console.log(`Created ${filename}`);
+      runtime: {
+        logLevel: "info"
       }
-    })
+    };
+
+    await writeFile(
+      "markgen.config.json",
+      JSON.stringify(config, null, 2),
+      "utf-8"
+    );
+
+    console.log(`Created ${filename} + markgen.config.json`);
+  }
+})
   }
 });
 
