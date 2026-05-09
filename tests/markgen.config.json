@@ -1,0 +1,12 @@
+{
+  "project": "main",
+  "version": "0.1.0",
+  "defaultFile": "main.mg",
+  "compiler": {
+    "strict": true,
+    "debug": false
+  },
+  "runtime": {
+    "logLevel": "info"
+  }
+}
